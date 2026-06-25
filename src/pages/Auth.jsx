@@ -11,6 +11,7 @@ export default function Auth({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState("");
 
   const handleLogin = (e) => {
@@ -42,7 +43,7 @@ export default function Auth({
       name: name || "New User",
       email: email,
       avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop",
-      role: "user",
+      role: isAdmin ? "admin" : "user",
       joinedDate: new Date().toISOString().split("T")[0],
       favoriteGenre: "Pop",
       listeningTime: "0 hours"
@@ -157,6 +158,21 @@ export default function Auth({
                   style={{ width: "100%", padding: "12px 14px 12px 42px", borderRadius: "10px", backgroundColor: "rgba(255,255,255,0.04)", border: "1px solid var(--border-color)", color: "#fff", outline: "none" }}
                 />
               </div>
+            </div>
+          )}
+
+          {currentPage === "register" && (
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
+              <input 
+                type="checkbox" 
+                id="adminCheck"
+                checked={isAdmin}
+                onChange={(e) => setIsAdmin(e.target.checked)}
+                style={{ cursor: "pointer", width: "16px", height: "16px", accentColor: "var(--accent-purple)" }}
+              />
+              <label htmlFor="adminCheck" style={{ fontSize: "13px", color: "var(--text-main)", cursor: "pointer", userSelect: "none" }}>
+                Register as an Admin (to add music)
+              </label>
             </div>
           )}
 

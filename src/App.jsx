@@ -37,10 +37,10 @@ export default function App() {
   const [currentPlaylist, setCurrentPlaylist] = useState(null);
 
   // Audio Playback & Preferences States
-  const [activeTrack, setActiveTrack] = useState(mockSongs[0]); // pre-select "Blinding Lights"
+  const [activeTrack, setActiveTrack] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
-  const [favorites, setFavorites] = useState(["s1", "s2", "s7"]); // pre-load a few liked songs
+  const [favorites, setFavorites] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Playback Queue management

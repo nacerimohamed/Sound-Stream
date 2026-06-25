@@ -28,7 +28,7 @@ export default function AdminDashboard({
   const [editingId, setEditingId] = useState(null);
 
   // Form States
-  const [songForm, setSongForm] = useState({ title: "", artistId: "", albumId: "", cover: "", duration: 200, audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", genre: "Pop", plays: 100000 });
+  const [songForm, setSongForm] = useState({ title: "", artistId: "", albumId: "", cover: "", coverFile: null, duration: 0, audioUrl: "", audioFile: null, genre: "", plays: 0 });
   const [artistForm, setArtistForm] = useState({ name: "", avatar: "", banner: "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=1200&h=400&fit=crop", bio: "", listeners: "1,200,000", verified: true, genres: ["Pop"] });
   const [albumForm, setAlbumForm] = useState({ title: "", artistId: "", cover: "", year: 2024, genre: "Pop", description: "" });
   const [userForm, setUserForm] = useState({ name: "", email: "", avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop", role: "user", joinedDate: "2024-06-01", favoriteGenre: "Pop", listeningTime: "10 hours" });
@@ -41,7 +41,7 @@ export default function AdminDashboard({
     setModalMode("add");
     setShowModal(true);
     if (activeTab === "songs") {
-      setSongForm({ title: "", artistId: artists[0]?.id || "", albumId: albums[0]?.id || "", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&h=300&fit=crop", duration: 180, audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", genre: "Pop", plays: 50000 });
+      setSongForm({ title: "", artistId: artists[0]?.id || "", albumId: albums[0]?.id || "", cover: "", coverFile: null, duration: 0, audioUrl: "", audioFile: null, genre: "", plays: 0 });
     } else if (activeTab === "artists") {
       setArtistForm({ name: "", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop", banner: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=1200&h=400&fit=crop", bio: "", listeners: "500,000", verified: false, genres: ["Electronic"] });
     } else if (activeTab === "albums") {
@@ -90,11 +90,17 @@ export default function AdminDashboard({
     if (activeTab === "songs") {
       const artist = artists.find(a => a.id === songForm.artistId);
       const album = albums.find(al => al.id === songForm.albumId);
+      const fallbackCover = "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&h=300&fit=crop";
       const songData = {
         ...songForm,
-        artistName: artist ? artist.name : "Unknown Artist",
-        albumName: album ? album.title : "Unknown Album"
+        artistName: songForm.customArtistName || (artist ? artist.name : "Unknown Artist"),
+        albumName: album ? album.title : "Single",
+        cover: songForm.cover || fallbackCover,
       };
+      // Remove internal-only fields before storing
+      delete songData.coverFile;
+      delete songData.audioFile;
+      delete songData.customArtistName;
 
       if (modalMode === "add") {
         setSongs([...songs, { ...songData, id: "s" + (songs.length + 1) }]);
@@ -509,38 +515,83 @@ export default function AdminDashboard({
               {activeTab === "songs" && (
                 <>
                   <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                    <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Song Title</label>
-                    <input type="text" required value={songForm.title} onChange={(e) => setSongForm({ ...songForm, title: e.target.value })} style={{ padding: "10px", borderRadius: "6px", backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "#fff", outline: "none" }} />
+                    <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Song Title *</label>
+                    <input type="text" required placeholder="e.g. My New Song" value={songForm.title} onChange={(e) => setSongForm({ ...songForm, title: e.target.value })} style={{ padding: "10px", borderRadius: "6px", backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "#fff", outline: "none" }} />
                   </div>
+
                   <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                    <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Artist</label>
-                    <select value={songForm.artistId} onChange={(e) => setSongForm({ ...songForm, artistId: e.target.value })} style={{ padding: "10px", borderRadius: "6px", backgroundColor: "var(--bg-card)", border: "1px solid var(--border-color)", color: "#fff", outline: "none" }}>
-                      {artists.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
-                    </select>
+                    <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Artist Name *</label>
+                    <input type="text" required placeholder="e.g. John Doe" value={songForm.customArtistName || ""} onChange={(e) => setSongForm({ ...songForm, customArtistName: e.target.value, artistId: "" })} style={{ padding: "10px", borderRadius: "6px", backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "#fff", outline: "none" }} />
                   </div>
+
                   <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                    <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Album</label>
-                    <select value={songForm.albumId} onChange={(e) => setSongForm({ ...songForm, albumId: e.target.value })} style={{ padding: "10px", borderRadius: "6px", backgroundColor: "var(--bg-card)", border: "1px solid var(--border-color)", color: "#fff", outline: "none" }}>
-                      {albums.map(al => <option key={al.id} value={al.id}>{al.title}</option>)}
-                    </select>
+                    <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Genre *</label>
+                    <input type="text" required placeholder="e.g. Pop, Hip-Hop, Jazz" value={songForm.genre} onChange={(e) => setSongForm({ ...songForm, genre: e.target.value })} style={{ padding: "10px", borderRadius: "6px", backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "#fff", outline: "none" }} />
                   </div>
+
+                  {/* Audio File Upload */}
                   <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                    <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Genre</label>
-                    <input type="text" required value={songForm.genre} onChange={(e) => setSongForm({ ...songForm, genre: e.target.value })} style={{ padding: "10px", borderRadius: "6px", backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "#fff", outline: "none" }} />
+                    <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Audio File * (MP3, WAV, OGG)</label>
+                    <label style={{
+                      display: "flex", alignItems: "center", gap: "10px",
+                      padding: "12px", borderRadius: "8px",
+                      border: `2px dashed ${songForm.audioUrl ? "var(--accent-purple)" : "var(--border-color)"}`,
+                      backgroundColor: "rgba(255,255,255,0.03)", cursor: "pointer"
+                    }}>
+                      <Music size={18} color={songForm.audioUrl ? "var(--accent-purple)" : "var(--text-muted)"} />
+                      <span style={{ fontSize: "13px", color: songForm.audioUrl ? "var(--accent-purple)" : "var(--text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {songForm.audioFile ? songForm.audioFile.name : "Click to choose audio file"}
+                      </span>
+                      <input
+                        type="file"
+                        accept="audio/*"
+                        style={{ display: "none" }}
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (!file) return;
+                          const url = URL.createObjectURL(file);
+                          // Auto-detect duration
+                          const audio = new Audio(url);
+                          audio.onloadedmetadata = () => {
+                            setSongForm(prev => ({ ...prev, audioFile: file, audioUrl: url, duration: Math.round(audio.duration) }));
+                          };
+                          audio.onerror = () => {
+                            setSongForm(prev => ({ ...prev, audioFile: file, audioUrl: url }));
+                          };
+                        }}
+                      />
+                    </label>
                   </div>
+
+                  {/* Cover Image Upload */}
                   <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                    <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Cover Image URL</label>
-                    <input type="text" required value={songForm.cover} onChange={(e) => setSongForm({ ...songForm, cover: e.target.value })} style={{ padding: "10px", borderRadius: "6px", backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "#fff", outline: "none" }} />
-                  </div>
-                  <div style={{ display: "flex", gap: "12px" }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", flex: 1 }}>
-                      <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Duration (Seconds)</label>
-                      <input type="number" required value={songForm.duration} onChange={(e) => setSongForm({ ...songForm, duration: parseInt(e.target.value) || 0 })} style={{ padding: "10px", borderRadius: "6px", backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "#fff", outline: "none" }} />
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", flex: 1 }}>
-                      <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Plays Count</label>
-                      <input type="number" required value={songForm.plays} onChange={(e) => setSongForm({ ...songForm, plays: parseInt(e.target.value) || 0 })} style={{ padding: "10px", borderRadius: "6px", backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "#fff", outline: "none" }} />
-                    </div>
+                    <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Cover Image (JPG, PNG, WEBP)</label>
+                    <label style={{
+                      display: "flex", alignItems: "center", gap: "10px",
+                      padding: "12px", borderRadius: "8px",
+                      border: `2px dashed ${songForm.cover ? "var(--accent-blue)" : "var(--border-color)"}`,
+                      backgroundColor: "rgba(255,255,255,0.03)", cursor: "pointer"
+                    }}>
+                      {songForm.cover ? (
+                        <img src={songForm.cover} alt="cover" style={{ width: "36px", height: "36px", borderRadius: "4px", objectFit: "cover" }} />
+                      ) : (
+                        <Disc size={18} color="var(--text-muted)" />
+                      )}
+                      <span style={{ fontSize: "13px", color: songForm.cover ? "var(--accent-blue)" : "var(--text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {songForm.coverFile ? songForm.coverFile.name : "Click to choose cover image (optional)"}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (!file) return;
+                          const url = URL.createObjectURL(file);
+                          setSongForm(prev => ({ ...prev, coverFile: file, cover: url }));
+                        }}
+                      />
+                    </label>
                   </div>
                 </>
               )}

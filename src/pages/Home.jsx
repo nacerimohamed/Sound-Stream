@@ -13,6 +13,18 @@ export default function Home({
   setSongDetailsId 
 }) {
   
+  if (songs.length === 0) {
+    return (
+      <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "calc(100vh - 220px)", gap: "16px", color: "var(--text-muted)", padding: "20px" }}>
+        <Flame size={48} color="var(--accent-purple)" />
+        <h2 style={{ color: "#fff", fontWeight: "700", margin: "10px 0 4px" }}>No music in the library</h2>
+        <p style={{ maxWidth: "400px", textAlign: "center", fontSize: "14px", lineHeight: "1.5", margin: 0 }}>
+          There is no music uploaded yet. Go to the <strong>Admin Panel</strong> in the sidebar to add your own songs and artists!
+        </p>
+      </div>
+    );
+  }
+
   // Find featured items
   const featuredSong = songs.find(s => s.id === "s10") || songs[0];
   const trendingSongs = songs.slice(0, 5);
