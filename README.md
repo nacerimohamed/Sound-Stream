@@ -1,69 +1,143 @@
-# 🎵 Plateforme Musicale
+# 🎵 Sound-Stream: Premium Music Streaming Platform
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![Statut](https://img.shields.io/badge/statut-en%20développement-yellow)
-![Licence](https://img.shields.io/badge/licence-MIT-green)
-
-## 📖 Description
-
-**Plateforme Musicale** est une application web complète permettant aux utilisateurs de découvrir, écouter, partager et gérer leurs morceaux préférés. Inspirée des grands services de streaming, elle offre une expérience fluide et intuitive, avec des fonctionnalités sociales et de recommandation.
-
-Que vous soyez auditeur ou créateur, notre plateforme vous donne les outils pour :
-
-- Explorer une vaste bibliothèque musicale.
-- Créer des playlists personnalisées.
-- Suivre vos artistes favoris.
-- Interagir avec la communauté via des commentaires et des likes.
+Sound-Stream is a state-of-the-art, Spotify-inspired web application built with **React 19**, **Vite**, and **Vanilla CSS**. It provides a fully functional, self-managed music library experience featuring a gorgeous glassmorphic UI, responsive layouts, audio playback control, playlist curation, and an advanced administrative dashboard with real-time CRUD controls.
 
 ---
 
-## ✨ Fonctionnalités
+## ✨ Features
 
-- **Lecture audio** : lecteur intégré avec contrôles (lecture/pause, saut, volume, progression).
-- **Recherche avancée** : par titre, artiste, album ou genre.
-- **Playlists** : création, modification, suppression et partage.
-- **Système de recommandation** : basé sur vos écoutes et vos goûts.
-- **Authentification** : inscription / connexion sécurisée (JWT).
-- **Profil utilisateur** : avatar, biographie, statistiques d'écoute.
-- **Administration** : gestion des contenus (ajout/suppression de morceaux, albums, artistes).
-- **API RESTful** : exposée pour une éventuelle intégration mobile.
-- **Responsive** : adapté aux mobiles, tablettes et desktop.
+### 🎧 Audio Playback & Player
+*   **Persistent Bottom Player:** Seamless audio controls, including Play/Pause, Next, Previous, and Volume sliders.
+*   **Playback Queue:** Tracks dynamically loop and support smart **Shuffle** and index-based queue traversal.
+*   **Favorites & Likes:** Direct integration with the user's favorite tracklist, easily toggled from the player bar or details pages.
+*   **Interactive Progress Seeking:** Visual playback track details and duration indicators.
 
----
+### 📊 Admin Control Center (Dashboard)
+*   **Listening Analytics:** A custom SVG line chart displaying real-time stream data (thousands) across months with interactive hovering.
+*   **Catalog CRUD Panels:** Dedicated control panels to **Create, Read, Update, and Delete** models for:
+    *   **Songs:** Upload local files (audio & cover art) using native `Blob` URLs for instantly playable items.
+    *   **Artists:** Manage verification badges, banner URLs, biographic summaries, and genres.
+    *   **Albums:** Group songs together by artist, year of release, genre, and descriptions.
+    *   **Users:** System role modifications (toggle Standard/Admin privileges), email updates, and metrics.
 
-## 🛠️ Technologies utilisées
-
-### Frontend
-- [React](https://reactjs.org/) - Bibliothèque UI
-- [Redux Toolkit](https://redux-toolkit.js.org/) - Gestion d'état
-- [Tailwind CSS](https://tailwindcss.com/) - Framework CSS
-- [Axios](https://axios-http.com/) - Requêtes HTTP
-- [React Router](https://reactrouter.com/) - Navigation
-
-### Backend
-- [Node.js](https://nodejs.org/) + [Express](https://expressjs.com/) - Serveur
-- [MongoDB](https://www.mongodb.com/) + [Mongoose](https://mongoosejs.com/) - Base de données
-- [JSON Web Tokens](https://jwt.io/) - Authentification
-- [Multer](https://github.com/expressjs/multer) - Gestion des fichiers audio/images
-- [Spotify Web API](https://developer.spotify.com/) - Intégration des métadonnées (optionnel)
-
-### Outils
-- [Git](https://git-scm.com/) - Contrôle de version
-- [Docker](https://www.docker.com/) - Conteneurisation (optionnel)
-- [ESLint](https://eslint.org/) / [Prettier](https://prettier.io/) - Qualité de code
+### 🔍 Discovery & Personalization
+*   **State-Driven Router:** Instant transition between pages without page reloads (Home, Search, Details, Playlists, Auth, Profile, Admin).
+*   **Real-time Unified Search:** Filter dynamically by song names, artist profiles, or album titles with a single search bar.
+*   **Dynamic Custom Playlists:** Users can instantiate custom playlists, append song tracks, and edit queue contents.
+*   **User Profiles:** Individualized metrics dashboard displaying total listening hours, favorite genres, curated playlists, and favorited songs.
 
 ---
 
-## 🚀 Installation
+## 🎨 Design System & Aesthetics
 
-### Prérequis
-- Node.js (v16 ou supérieur)
-- npm ou yarn
-- MongoDB (local ou Atlas)
+Sound-Stream implements a bespoke design system via **pure Vanilla CSS** using custom properties, glassmorphism elements, and smooth hardware-accelerated transitions:
 
-### Étapes
+*   **Color Palette:** Sleek dark-mode aesthetic utilizing deep space colors (`#05060b`, `#0a0b12`) highlighted with vibrant accent gradients (`#7b2cbf` to `#00b4d8`).
+*   **Typography:** Modern typography imports utilizing **Outfit** and **Plus Jakarta Sans** for clean, readable headers and details.
+*   **Glassmorphic Design:** Card containers, modals, sidebars, and nav elements render with `backdrop-filter: blur()` overlays and subtle semi-transparent borders.
+*   **Mobile-First Responsiveness:**
+    *   *Desktops:* Fixed left sidebar with quick links and custom playlist creator.
+    *   *Tablets (under 1024px):* Collapse sidebar to mini icon-only layout to maximize screen estate.
+    *   *Mobile (under 768px):* Automatically transforms into a bottom tab bar navigation and simplifies player controls.
 
-1. **Cloner le dépôt**
+---
+
+## 🛠️ Technology Stack
+
+*   **Framework:** [React 19](https://react.dev/) (Functional components, Hooks, and State Management)
+*   **Build Tool:** [Vite](https://vitejs.dev/) (Ultra-fast development server and asset bundling)
+*   **Iconography:** [Lucide React](https://lucide.dev/) (Crisp SVG vector icons)
+*   **Linter:** [Oxlint](https://oxc.rs/docs/guide/usage/linter.html) (Extremely fast Rust-based linter)
+*   **Styling:** Native CSS custom properties and keyframe animations.
+
+---
+
+## 📐 Application Architecture & Data Flow
+
+Sound-Stream uses central state propagation at the top-level `App` component. This architecture serves as an in-memory client-side database, ensuring that any modifications (CRUD) applied by administrative users instantly updates references across all views without refreshing.
+
+```mermaid
+graph TD
+    App[App.jsx State Container] -->|Props: songs, artists, albums| Home[Home Page]
+    App -->|Props: query, filter, play| Search[Search Page]
+    App -->|Props: detailsId| Details[Artist/Album/Song Details]
+    App -->|Props: playlists, createPlaylist| PlaylistPage[Playlist Manager]
+    App -->|Props: users, setUsers, setUser| Auth[Auth & Registration]
+    App -->|Props: songs, setSongs, users, setUsers| Admin[Admin Dashboard]
+    App -->|Props: activeTrack, isPlaying, volume| Player[Bottom Fixed Player]
+```
+
+---
+
+## 🚀 Getting Started
+
+### 📋 Prerequisites
+Make sure you have [Node.js](https://nodejs.org/) installed on your machine (v18+ recommended).
+
+### ⚙️ Installation
+1. Clone the repository or navigate to the project directory:
    ```bash
-   git clone https://github.com/votre-utilisateur/plateforme-musicale.git
-   cd plateforme-musicale
+   cd music
+   ```
+2. Install the package dependencies:
+   ```bash
+   npm install
+   ```
+
+### 💻 Running the Application
+*   **Start Development Server:** Runs the app in development mode with Hot Module Replacement (HMR).
+    ```bash
+    npm run dev
+    ```
+    Once started, navigate to the local address displayed in the console (usually `http://localhost:5173`).
+
+*   **Linting the Codebase:** Run the Oxlint linter to detect issues:
+    ```bash
+    npm run lint
+    ```
+
+*   **Production Build:** Compile the application and prepare assets for hosting:
+    ```bash
+    npm run build
+    ```
+
+*   **Preview Production Build:** Run a local server to test the compiled production bundles:
+    ```bash
+    npm run preview
+    ```
+
+---
+
+## 📂 Project Structure
+
+```text
+music/
+├── public/                 # Static assets
+├── src/
+│   ├── assets/             # Images, SVGs, and media files
+│   ├── components/         # Reusable structural components
+│   │   ├── Navbar.jsx      # Top navigation & live search input
+│   │   ├── Player.jsx      # Bottom fixed audio media player
+│   │   └── Sidebar.jsx     # Navigation sidebar (responsive)
+│   ├── data/
+│   │   └── mockData.js     # Default mock templates & system users
+│   ├── pages/              # Routing panels / Views
+│   │   ├── AdminDashboard.jsx # CRUD tables & analytics
+│   │   ├── Auth.jsx        # Login & user registration page
+│   │   ├── Details.jsx     # Details for albums, songs, & artists
+│   │   ├── Home.jsx        # Dashboard highlights
+│   │   ├── PlaylistPage.jsx# Custom user-curated tracks
+│   │   ├── Profile.jsx     # User metadata & stats
+│   │   └── Search.jsx      # Live catalog search view
+│   ├── App.css             # Root structure variables
+│   ├── App.jsx             # Main router & database states
+│   ├── index.css           # Global typography, glassmorphism, & breakpoints
+│   └── main.jsx            # React root DOM instantiation
+├── vite.config.js          # Vite build config
+├── package.json            # Scripts & dependencies
+└── README.md               # Documentation
+```
+
+---
+
+> By default, the application pre-authenticates you as **Alex Mercer** (Admin role) upon launch. This allows you to explore the **Admin Dashboard** and edit catalog listings immediately. You can log out from the sidebar to register a standard user account.
