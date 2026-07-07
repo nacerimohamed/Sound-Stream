@@ -2,9 +2,9 @@
 
 Sound-Stream is a state-of-the-art, Spotify-inspired web application built with **React 19**, **Vite**, and **Vanilla CSS**. It provides a fully functional, self-managed music library experience featuring a gorgeous glassmorphic UI, responsive layouts, audio playback control, playlist curation, and an advanced administrative dashboard with real-time CRUD controls.
 
-sound-stream-ten.vercel.app
----
 
+---
+| 🌐 **Site en ligne (démo)** | [Cliquez ici](https://sound-stream-ten.vercel.app/) |
 ## ✨ Features
 
 ### 🎧 Audio Playback & Player
